@@ -30,6 +30,8 @@ type Server struct {
 	search search.Search
 
 	diagnosticDebounced func(func())
+
+	tempDir string
 }
 
 // ServerOpts holds the options to create a new Server.
@@ -74,7 +76,6 @@ func NewServer(opts ServerOpts, appName string, version string) *Server {
 	state := l.NewProjectState(logger, option.Some(requestedLanguageVersion.Number), opts.Debug)
 	parser := p.NewParser(logger)
 	search := search.NewSearch(logger, opts.Debug)
-
 	server := &Server{
 		server:  glspServer,
 		options: opts,
@@ -146,7 +147,7 @@ func NewServer(opts ServerOpts, appName string, version string) *Server {
 
 // Run starts the Language Server in stdio mode.
 func (s *Server) Run() error {
-	return errors.Wrap(s.server.RunStdio(), "lsp")
+	return errors.Wrap(s.server.RunTCP("0.0.0.0:9696"), "lsp")
 }
 
 func shutdown(context *glsp.Context) error {

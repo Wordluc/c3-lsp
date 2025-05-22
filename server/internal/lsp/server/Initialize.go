@@ -2,6 +2,7 @@ package server
 
 import (
 	"os"
+	"os/exec"
 
 	"github.com/pherrymason/c3-lsp/pkg/cast"
 	"github.com/pherrymason/c3-lsp/pkg/document"
@@ -57,6 +58,24 @@ func (s *Server) Initialize(serverName string, serverVersion string, capabilitie
 		s.RunDiagnostics(s.state, context.Notify, false)
 	}
 
+	pathTemp, err := os.MkdirTemp(os.TempDir(), "tempGolang")
+	if err != nil {
+		panic(err)
+	}
+	// completely arbitrary paths
+	oldDir := s.state.GetProjectRootURI() + "/."
+	newDir := pathTemp
+
+	cmd := exec.Command("cp", "--recursive", oldDir, newDir)
+	println("--------cloning---------")
+	println("oldDir ", oldDir)
+	println("newDir ", newDir)
+	println("--------tempReady---------")
+	err = cmd.Run()
+	if err != nil {
+		panic(err)
+	}
+	s.tempDir = pathTemp
 	if params.Capabilities.TextDocument.PublishDiagnostics.RelatedInformation == nil || *params.Capabilities.TextDocument.PublishDiagnostics.RelatedInformation == false {
 		s.options.Diagnostics.Enabled = false
 	}

@@ -24,7 +24,7 @@ func cmdLineArguments() (server.ServerOpts, bool, bool) {
 	var c3cPath = flag.String("c3c-path", "", "Path where c3c is located.")
 	var stdlibPath = flag.String("stdlib-path", "", "Path to stdlib sources. Allows stdlib inspections.")
 
-	var diagnosticsDelay = flag.Int("diagnostics-delay", 2000, "Delay calculation of code diagnostics after modifications in source. In milliseconds, default 2000 ms.")
+	var diagnosticsDelay = flag.Int("diagnostics-delay", 150, "Delay calculation of code diagnostics after modifications in source. In milliseconds, default 2000 ms.")
 
 	flag.Parse()
 

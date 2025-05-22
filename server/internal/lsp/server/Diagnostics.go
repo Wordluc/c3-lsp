@@ -19,7 +19,7 @@ func (s *Server) RunDiagnostics(state *project_state.ProjectState, notify glsp.N
 	}
 
 	runDiagnostics := func() {
-		out, stdErr, err := c3c.CheckC3ErrorsCommand(s.options.C3, state.GetProjectRootURI())
+		out, stdErr, err := c3c.CheckC3ErrorsCommand(s.options.C3, s.tempDir)
 		log.Println("output:", out.String())
 		log.Println("output:", stdErr.String())
 		if err == nil {
@@ -35,29 +35,23 @@ func (s *Server) RunDiagnostics(state *project_state.ProjectState, notify glsp.N
 			s.clearOldDiagnostics(s.state, notify)
 			return
 		}
-		// Send empty diagnostics for those files that had previously an error, but not anymore.
-		// If this is not done, the IDE will keep displaying the errors.
-		for k := range s.state.GetDocumentDiagnostics() {
-			if !hasDiagnosticForFile(k, errorsInfo) {
-				s.state.RemoveDocumentDiagnostics(k)
-				notify(protocol.ServerTextDocumentPublishDiagnostics,
-					protocol.PublishDiagnosticsParams{
-						URI:         fs.ConvertPathToURI(k, s.options.C3.StdlibPath),
-						Diagnostics: []protocol.Diagnostic{},
-					})
-			}
-		}
-
+		var newDiagnostics map[string][]protocol.Diagnostic = make(map[string][]protocol.Diagnostic, 0)
 		for _, errInfo := range errorsInfo {
-			newDiagnostics := []protocol.Diagnostic{
-				errInfo.Diagnostic,
+			lenTemp := len(s.tempDir)
+			errInfo.File = s.state.GetProjectRootURI() + "/" + errInfo.File[lenTemp:]
+			newDiagnostics[errInfo.File] = append(newDiagnostics[errInfo.File], errInfo.Diagnostic)
+			state.SetDocumentDiagnostics(errInfo.File, newDiagnostics[errInfo.File])
+		}
+		//TODO see if can be improved
+		for key, value := range newDiagnostics {
+			if len(value) == 0 {
+				continue
 			}
-			state.SetDocumentDiagnostics(errInfo.File, newDiagnostics)
 			notify(
 				protocol.ServerTextDocumentPublishDiagnostics,
 				protocol.PublishDiagnosticsParams{
-					URI:         fs.ConvertPathToURI(errInfo.File, s.options.C3.StdlibPath),
-					Diagnostics: newDiagnostics,
+					URI:         fs.ConvertPathToURI(key, s.options.C3.StdlibPath),
+					Diagnostics: value,
 				})
 		}
 	}

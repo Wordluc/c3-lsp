@@ -11,6 +11,7 @@ import (
 
 // Support "Hover"
 func (h *Server) TextDocumentHover(context *glsp.Context, params *protocol.HoverParams) (*protocol.Hover, error) {
+	//TODO: has to be done on temp directory
 	pos := symbols.NewPositionFromLSPPosition(params.Position)
 	docId := utils.NormalizePath(params.TextDocument.URI)
 	foundSymbolOption := h.search.FindSymbolDeclarationInWorkspace(docId, pos, h.state)

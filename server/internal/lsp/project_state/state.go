@@ -125,9 +125,7 @@ func (s *ProjectState) UpdateDocument(docURI protocol.DocumentUri, changes []int
 	if !ok {
 		return
 	}
-
 	doc.ApplyChanges(changes)
-
 	s.RefreshDocumentIdentifiers(doc, parser)
 }
 
