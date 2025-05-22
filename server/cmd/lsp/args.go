@@ -11,7 +11,8 @@ import (
 	"github.com/pherrymason/c3-lsp/pkg/option"
 )
 
-func cmdLineArguments() (server.ServerOpts, bool, bool) {
+func cmdLineArguments() (server.ServerOpts, bool, bool, bool) {
+	var isTcp = flag.Bool("isTcp", false, "is lsp work on tcp: 127.0.0.0:9696")
 	var showHelp = flag.Bool("help", false, "Shows this help")
 	var sendCrashReports = flag.Bool("send-crash-reports", false, "Automatically reports crashes to server.")
 	var showVersion = flag.Bool("version", false, "Shows server version")
@@ -61,7 +62,7 @@ func cmdLineArguments() (server.ServerOpts, bool, bool) {
 		LogFilepath:      logFilePathOpt,
 		Debug:            *debug,
 		SendCrashReports: *sendCrashReports,
-	}, *showHelp, *showVersion
+	}, *showHelp, *showVersion, *isTcp
 }
 
 func printAppGreet(appName string, version string, commit string) {

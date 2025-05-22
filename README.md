@@ -34,7 +34,6 @@ Read more in the [wiki](https://github.com/pherrymason/c3-lsp/wiki/Integration-w
 Simply run `c3lsp` to start the server.  
 It supports the following options:
 - **help:** Display accepted options.
-- **send-reports:** If enabled (disabled by default) will send __crash__ reports to Sentry so bugs can be debugged easily.
 - **lang-version:** Use it to specify a specific c3 language version. By default `c3lsp` will select the last version supported.
 
 

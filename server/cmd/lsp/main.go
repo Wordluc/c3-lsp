@@ -11,7 +11,7 @@ const prerelease = false
 const appName = "C3-LSP"
 
 func main() {
-	options, showHelp, showVersion := cmdLineArguments()
+	options, showHelp, showVersion, isTcp := cmdLineArguments()
 	commitHash := buildInfo()
 	if showHelp {
 		printHelp(appName, getLSPVersion(), commitHash)
@@ -25,7 +25,7 @@ func main() {
 	}
 
 	server := server.NewServer(options, appName, version)
-	server.Run()
+	server.Run(isTcp)
 }
 
 func getLSPVersion() string {

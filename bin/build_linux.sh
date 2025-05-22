@@ -1,5 +1,5 @@
 echo "Building linux-amd64"
-
+cd ..
 # Are we in macOS?
 if [[ "$(uname -s)" == "Darwin" ]]; then
     GOOS=linux GOARCH=amd64 CGO_ENABLED=1 CC="x86_64-linux-musl-gcc" go build -C server/cmd/lsp -o ../../bin/c3lsp

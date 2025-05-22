@@ -146,8 +146,12 @@ func NewServer(opts ServerOpts, appName string, version string) *Server {
 }
 
 // Run starts the Language Server in stdio mode.
-func (s *Server) Run() error {
-	return errors.Wrap(s.server.RunTCP("0.0.0.0:9696"), "lsp")
+func (s *Server) Run(isTCP bool) error {
+	if isTCP {
+		return errors.Wrap(s.server.RunTCP("0.0.0.0:9696"), "lsp")
+	} else {
+		return errors.Wrap(s.server.RunStdio(), "lsp")
+	}
 }
 
 func shutdown(context *glsp.Context) error {
