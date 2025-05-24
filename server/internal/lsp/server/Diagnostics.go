@@ -19,15 +19,9 @@ func (s *Server) RunDiagnostics(state *project_state.ProjectState, notify glsp.N
 	}
 
 	runDiagnostics := func() {
-		out, stdErr, err := c3c.CheckC3ErrorsCommand(s.options.C3, s.tempDir)
+		out, stdErr, _ := c3c.CheckC3ErrorsCommand(s.options.C3, s.tempDir)
 		log.Println("output:", out.String())
 		log.Println("output:", stdErr.String())
-		if err == nil {
-			s.clearOldDiagnostics(s.state, notify)
-			return
-		}
-
-		log.Println("Diagnostics report:", err)
 		errorsInfo, diagnosticsDisabled := extractErrorDiagnostics(stdErr.String())
 
 		if diagnosticsDisabled {
@@ -43,10 +37,10 @@ func (s *Server) RunDiagnostics(state *project_state.ProjectState, notify glsp.N
 			state.SetDocumentDiagnostics(errInfo.File, newDiagnostics[errInfo.File])
 		}
 		//TODO see if can be improved
+		if len(newDiagnostics) == 0 {
+			s.clearOldDiagnostics(s.state, notify)
+		}
 		for key, value := range newDiagnostics {
-			if len(value) == 0 {
-				continue
-			}
 			notify(
 				protocol.ServerTextDocumentPublishDiagnostics,
 				protocol.PublishDiagnosticsParams{

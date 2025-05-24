@@ -42,8 +42,20 @@ func BuildFromDocumentPosition(
 	}
 
 	//s := fmt.Sprintf("Node found. Type: %s. Content: %s", node.Type(), node.Content([]byte(doc.SourceCode.Text)))
-	//fmt.Printf(s)
-
+	//could it be done better?
+	var findTypeIdent func(*sitter.Node) *sitter.Node
+	findTypeIdent = func(n *sitter.Node) *sitter.Node {
+		if n.Type() == "type_ident" {
+			return n
+		}
+		for i := 0; i < int(n.ChildCount()); i++ {
+			result := findTypeIdent(n.Child(i))
+			if result != nil {
+				return result
+			}
+		}
+		return nil
+	}
 	switch node.Type() {
 	case "integer_literal":
 		context.IsLiteral = true
@@ -59,13 +71,17 @@ func BuildFromDocumentPosition(
 		context.IsLiteral = true
 	case "bytes_expr":
 		context.IsLiteral = true
-
 	case "ident":
 		context.IsIdentifier = true
-
 		if node.Parent().Type() == "module_resolution" {
 			context.IsModuleIdentifier = true
 		}
+	case "initializer_list":
+		//	initializerList := node.Parent().Parent()
+		//	typeNode := findTypeIdent(initializerList)
+		//	typeValue := (typeNode.Content([]byte(doc.SourceCode.Text)))
+		//I have the type of struct how i use it?
+
 	}
 
 	return context

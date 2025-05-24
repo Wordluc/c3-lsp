@@ -9,6 +9,7 @@ import (
 
 // Support "Completion"
 // Returns: []CompletionItem | CompletionList | nil
+// TODO: completion for field doesnt work
 func (h *Server) TextDocumentCompletion(context *glsp.Context, params *protocol.CompletionParams) (any, error) {
 
 	cursorContext := ctx.BuildFromDocumentPosition(
